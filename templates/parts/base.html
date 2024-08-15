@@ -1,0 +1,145 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="zxx">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Yoga Studio Template">
+    <meta name="keywords" content="Yoga, unica, creative, html">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Violet | Template</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css?family=Amatic+SC:400,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:100,200,300,400,500,600,700,800,900&display=swap"
+        rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- Css Styles -->
+{#    <link rel="stylesheet" href="{% static 'user/css/bootstrap.min.css' %}" type="text/css">#}
+{#    <link rel="stylesheet" href="{% static 'user/css/font-awesome.min.css' %}" type="text/css">#}
+{#    <link rel="stylesheet" href="{% static 'user/css/nice-select.css' %}" type="text/css">#}
+{#    <link rel="stylesheet" href="{% static 'user/css/owl.carousel.min.css' %}" type="text/css">#}
+{#    <link rel="stylesheet" href="{% static 'user/css/magnific-popup.css' %}" type="text/css">#}
+{#    <link rel="stylesheet" href="{% static 'user/css/slicknav.min.css' %}" type="text/css">#}
+{#    <link rel="stylesheet" href="{% static 'user/css/style.css' %}" type="text/css">#}
+{#    <link rel="stylesheet" href="{% static 'user/css/style1.css' %}" type="text/css">#}
+</head>
+
+<body>
+    <!-- Page Preloder -->
+    <div id="preloder">
+        <div class="loader"></div>
+    </div>
+    {% include 'parts/navbar.html'%}
+
+    <!-- Header End -->
+
+
+    
+    {% block body_block %} {% endblock %}
+
+
+
+    <!-- Footer Section Begin -->
+    <footer class="footer-section spad">
+        <div class="container">
+            <div class="newslatter-form">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <form action="#">
+                            <input type="text" placeholder="Your email address">
+                            <button type="submit">Subscribe to our newsletter</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-widget">
+                <div class="row">
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="single-footer-widget">
+                            <h4>About us</h4>
+                            <ul>
+                                <li>About Us</li>
+                                <li>Community</li>
+                                <li>Jobs</li>
+                                <li>Shipping</li>
+                                <li>Contact Us</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="single-footer-widget">
+                            <h4>Customer Care</h4>
+                            <ul>
+                                <li>Search</li>
+                                <li>Privacy Policy</li>
+                                <li>2019 Lookbook</li>
+                                <li>Shipping & Delivery</li>
+                                <li>Gallery</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="single-footer-widget">
+                            <h4>Our Services</h4>
+                            <ul>
+                                <li>Free Shipping</li>
+                                <li>Free Returnes</li>
+                                <li>Our Franchising</li>
+                                <li>Terms and conditions</li>
+                                <li>Privacy Policy</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="single-footer-widget">
+                            <h4>Information</h4>
+                            <ul>
+                                <li>Payment methods</li>
+                                <li>Times and shipping costs</li>
+                                <li>Product Returns</li>
+                                <li>Shipping methods</li>
+                                <li>Conformity of the products</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="social-links-warp">
+			<div class="container">
+				<div class="social-links">
+					<a href="" class="instagram"><i class="fa fa-instagram"></i><span>instagram</span></a>
+					<a href="" class="pinterest"><i class="fa fa-pinterest"></i><span>pinterest</span></a>
+					<a href="" class="facebook"><i class="fa fa-facebook"></i><span>facebook</span></a>
+					<a href="" class="twitter"><i class="fa fa-twitter"></i><span>twitter</span></a>
+					<a href="" class="youtube"><i class="fa fa-youtube"></i><span>youtube</span></a>
+					<a href="" class="tumblr"><i class="fa fa-tumblr-square"></i><span>tumblr</span></a>
+				</div>
+			</div>
+
+<div class="container text-center pt-5">
+                <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+  Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="#" target="_blank">Abhijith</a>
+  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+            </div>
+
+
+		</div>
+    </footer>
+    <!-- Footer Section End -->
+
+    <!-- Js Plugins -->
+{#    <script src="{% static 'user/js/jquery-3.3.1.min.js' %}"></script>#}
+{#    <script src="{% static 'user/js/bootstrap.min.js' %}"></script>#}
+{#    <script src="{% static 'user/js/jquery.magnific-popup.min.js' %}"></script>#}
+{#    <script src="{% static 'user/js/jquery.slicknav.js' %}"></script>#}
+{#    <script src="{% static 'user/js/owl.carousel.min.js' %}"></script>#}
+{#    <script src="{% static 'user/js/jquery.nice-select.min.js' %}"></script>#}
+{#    <script src="{% static 'user/js/mixitup.min.js' %}"></script>#}
+{#    <script src="{% static 'user/js/main.js' %}"></script>#}
+</body>
+
+</html>

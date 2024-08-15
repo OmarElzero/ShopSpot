@@ -1,0 +1,129 @@
+{% extends 'parts/base.html' %}
+{% load static %}
+{% block body_block %}
+
+    <!-- Page Add Section Begin -->
+    <section class="page-add cart-page-add">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="page-breadcrumb">
+                        <h2>Cart<span>.</span></h2>
+                        <a href="#">Home</a>
+                        <a href="#">Dresses</a>
+                        <a class="active" href="#">Night Dresses</a>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <img src="{% static 'user/img/add.jpg' %}" alt="">
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Page Add Section End -->
+
+    <!-- Cart Page Section Begin -->
+    <div class="cart-page">
+        <div class="container">
+            <div class="cart-table">
+                {% if cart_items %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="product-h">Product</th>
+                                <th>Price</th>
+                                <th class="quan">Quantity</th>
+                                <th>Remove</th>
+                            </tr>
+                        </thead>
+                        {% for c in cart_items %}
+                        {% if c.item.quantity > 0 %}
+                        <tbody>
+                            <tr>
+                                <td class="product-col">
+                                    <img src="{{ c.item.image.url }}" alt="">
+                                    <div class="p-title">
+                                        <h5>{{c.item.name}}</h5>
+                                    </div>
+                                </td>
+                                <td class="price-col">₹ {{c.item.price}}</td>
+                                <td class="quantity-col">
+                                  
+                                        <input type="text" value="{{c.quantity}}" style="border: 0ch;padding:20%;">
+                                
+                                </td>
+                                <td><a href="{% url 'remove_from_cart' c.id %}" class="product-close">X</a></td>
+                            </tr>
+                        </tbody>
+                        {% else %}
+                        <tbody>
+                            <tr>
+                                <td class="product-col">
+                                    <img src="{{ c.item.image.url }}" alt="">
+                                    <div class="p-title">
+                                        <h5>{{c.item.name}}</h5>
+                                    </div>
+                                </td>
+                                <td class="price-col">₹ {{c.item.price}}</td>
+                                <td class="quantity-col">
+                                  
+                                        <input type="text" value="Out of Stock" style="border: 0ch;padding:20%;">
+                                
+                                </td>
+                                <td><a href="{% url 'remove_from_cart' c.id %}" class="product-close">X</a></td>
+                            </tr>
+                        </tbody>
+                        {% endif %}
+                        {% endfor %}
+                    </table>
+            </div>
+            <div class="cart-btn">
+                <div class="row">
+                    <div class="col-lg-6">
+                        <div class="coupon-input">
+                            <input type="text" placeholder="Enter cupone code">
+                        </div>
+                    </div>
+                    <div class="col-lg-5 offset-lg-1 text-left text-lg-right">
+                        <a href="{% url 'clear_cart' %}"><div class="site-btn clear-btn">Clear Cart</div></a>
+                        <a href="{% url 'cart_order_now' %}" class="site-btn clear-btn">Buy Now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="shopping-method">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="total-info">
+                            <div class="total-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th class="total-cart">Cart Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="total-cart-p">₹ {{total}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+                {% if not cart_items %}
+                <div class="text-center">
+                    <img class="empty" src="https://mir-s3-cdn-cf.behance.net/projects/404/95974e121862329.Y3JvcCw5MjIsNzIxLDAsMTM5.png">
+                </div><br><br>
+                    
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- Cart Page Section End -->
+
+
+{% endblock %}
