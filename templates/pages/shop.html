@@ -1,0 +1,62 @@
+{% extends 'parts/base.html' %}
+{% load static %}
+{% block body_block %}
+
+    <!-- Page Add Section Begin -->
+    <section class="page-add">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="page-breadcrumb">
+                        <h2>Shop<span>.</span></h2>
+                        <a href="#">Home</a>
+                        <a href="#">Shop</a>
+                        <!-- <a class="active" href="#">Night Dresses</a> -->
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <img src="{% static 'user/img/add.jpg' %}" alt="">
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Page Add Section End -->
+
+    <!-- Categories Page Section Begin -->
+    {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+                <div class="message {{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <section id="product-1" class="section-p1">
+        <div class="feature-box">
+            <div class="p-container">
+                {% for p in products %}
+                    <a href="{% url 'product_details' p.id %}" class="product-link">
+                        <div class="p">
+                            <img src="{{p.image.url}}" alt="">
+                            <div class="des">
+                                <h5>{{p.name}}</h5>
+                                <h4>₹ {{p.price}}</h4>
+                            </div>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'add_to_cart' p.id %}" class="cart"><i class="fa-solid fa-cart-shopping"></i></a>
+                            {% else %}
+                                <a href="{% url 'login_page' %}" class="cart"><i class="fa-solid fa-cart-shopping"></i></a>
+                            {% endif %}
+                        </div>
+                    </a>
+                {% endfor %}
+            </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Page Section End -->
+
+{% endblock %}

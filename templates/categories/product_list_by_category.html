@@ -1,0 +1,59 @@
+{% extends 'parts/base.html' %}
+{% load static %}
+{% block body_block %}
+
+   <!-- Page Add Section Begin -->
+   <section class="page-add">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="page-breadcrumb">
+                        <h2>Shop<span>.</span></h2>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <img src="{% static 'user/img/add.jpg' %}" alt="">
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Page Add Section End -->
+
+    <section id="product-1" class="section-p1">
+        <div class="feature-box">
+            <div class="categories-controls">
+                <div class="p-container">
+                    {% for product in products %}
+                        <a href="{% url 'product_details' product.id %}" class="product-link">
+                            <div class="p">
+                                <img src="{{product.image.url}}" alt="">
+                                <div class="des">
+                                    <h5>{{product.name}}</h5>
+                                    <div class="rating">
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                        <i class="bi bi-star-fill"></i>
+                                    </div>
+                                    <h4>₹ {{product.price}}</h4>
+                                </div>
+                                {% if user.is_authenticated %}
+{% if p.id %}
+    <a href="{% url 'add_to_cart' p.id %}" class="cart"><i class="fa-solid fa-cart-shopping"></i></a>
+{% else %}
+    <span class="cart disabled"><i class="fa-solid fa-cart-shopping"></i> Unavailable</span>
+{% endif %}
+                                {% else %}
+                                    <a href="{% url 'login_page' %}" class="cart"><i class="fa-solid fa-cart-shopping"></i></a>
+                                {% endif %}
+                            </div>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+{% endblock %}

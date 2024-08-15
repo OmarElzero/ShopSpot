@@ -1,0 +1,58 @@
+.header-section {
+    background-color: #232f3e;
+    color: #fff;
+    padding: 10px 0;
+}
+.logo img {
+    width: 150px;
+}
+.search-bar {
+    display: flex;
+    width: 40%;
+}
+.search-bar input {
+    border: 1px solid #ccc;
+    padding: 5px 10px;
+    border-radius: 4px;
+    width: 100%;
+}
+.search-bar .search-btn {
+    background-color: #febd69;
+    border: none;
+    padding: 6px 15px;
+    margin-left: 5px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.search-bar .search-btn i {
+    color: #232f3e;
+}
+.user-access a {
+    color: #fff;
+    margin: 0 10px;
+}
+.main-menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+}
+.main-menu ul li {
+    margin: 0 15px;
+}
+.main-menu ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+}
+.main-menu ul li ul.sub-menu {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    color: #232f3e;
+    padding: 10px;
+    border-radius: 4px;
+}
+.main-menu ul li:hover ul.sub-menu {
+    display: block;
+}

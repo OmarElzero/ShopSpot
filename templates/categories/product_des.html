@@ -1,0 +1,84 @@
+{% extends 'parts/base.html' %}
+{% load static %}
+
+{% block body_block %}
+    <!-- Page Add Section Begin -->
+    <section class="page-add">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4">
+                    <div class="page-breadcrumb">
+                        <h2>Shirts<span>.</span></h2>
+                        <a href="#">Home</a>
+                        <a href="#">Dresses</a>
+                        <a class="active" href="#">Night Dresses</a>
+                    </div>
+                </div>
+                <div class="col-lg-8">
+                    <img src="{% static 'user/img/add.jpg' %}" alt="">
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- Page Add Section End -->
+
+    <!-- Product Page Section Beign -->
+    <section class="product-page">
+        <div class="container">
+            <div class="product-control">
+                <a href="#">Previous</a>
+                <a href="#">Next</a>
+            </div>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="product-slider owl-carousel">
+                        <div class="product-img">
+                            <figure>
+                                <img src="{{ product.image.url }}" alt="">
+                                <div class="p-status">new</div>
+                            </figure>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="product-content">
+                        <h2>{{ product.name }}</h2>
+                        <div class="pc-meta">
+                            <h5>₹ {{ product.price }}</h5>
+                            <div class="rating">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                            </div>
+                        </div>
+                        <p>{{ product.description }}</p>
+                        <ul class="tags">
+                            <li><span>Category:</span> {{ product.category }}</li>
+                            <li><span>Color:</span> {{ product.color }}</li>
+                            <li><span>Size:</span> {{ product.size }}</li>
+                        </ul>
+                        {% if product.quantity > 0 %}
+                            <div class="product-quantity">
+                                <a href="{% url 'order_now' product.id %}" class="primary-btn pc-btn">Buy Now</a>
+                            </div>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'add_to_cart' product.id %}" class="primary-btn pc-btn">Add to cart</a>
+                            {% else %}
+                            <a href="{% url 'login_page' %}" class="primary-btn pc-btn">Add to cart</a>
+                            {% endif %}
+                        {% else %}
+                            <p>Out of Stock</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section><br><br><br>
+    <!-- Product Page Section End -->
+{% endblock %}
+
+    
+    
+    
