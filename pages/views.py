@@ -11,14 +11,14 @@ from django.contrib import messages
 from django.shortcuts import reverse
 from categories.models import Product, CartItem, Cart, Category, Order, OrderItem
 from profiles.models import Customer
-
+from django.http import HttpResponse
 
 # Create your views here.
 
 
 def index(request):
     products = Product.objects.filter(quantity__gt=0)
-    return render(request, 'pages/index.html', {'products': products})
+    return  HttpResponse("test")
 
 
 def shop(request):
