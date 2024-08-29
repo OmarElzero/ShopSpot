@@ -1,7 +1,11 @@
 from django.urls import path
 from . import views
-urlpatterns = [
+from rest_framework import routers
+router = routers.DefaultRouter()
+urlpatterns = router.urls
+urlpatterns+= [
 
-path('profile/', views.profile, name='profile'),
-path('profile/edit/', views.profile_edit, name='profile_edit'),
+path('profile/', views.customer_information),
+path('profile/<int:id>/', views.customer_information),
+
 ]
