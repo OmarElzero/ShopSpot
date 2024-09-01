@@ -6,6 +6,13 @@ from .models import Customer
 from .serializers import CustomerSerializer
 from django.contrib.auth import authenticate
 from django.db.models import Q
+from django.contrib.auth import authenticate, login as auth_login
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth import authenticate
+
 
 
 #
@@ -77,12 +84,15 @@ def login(request):
     if not username or not password:
         return Response({'error': 'Username and password are required'}, status=status.HTTP_400_BAD_REQUEST)
 
-    user = authenticate(username=username, password=password)
-
-    if user is not None:
-        return Response({'success': True}, status=status.HTTP_200_OK)
-    else:
-        return Response({'success': False, 'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-
-
-
+    try:
+        customer = Customer.objects.get(username=username)
+        authenticate(username=username, password=password)
+        token = Token.objects.get_or_create(user=customer)
+        if customer.password == password:
+            # Store the customer ID in the session after a successful login
+            request.session['customer_id'] = customer.id
+            return Response({'success': True, 'token': token},status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+    except Customer.DoesNotExist:
+        return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)

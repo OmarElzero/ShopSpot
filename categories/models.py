@@ -13,6 +13,9 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
+
+def get_default_seller():
+        return Customer.objects.first().id
 class Product(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
@@ -22,6 +25,7 @@ class Product(models.Model):
     image = models.ImageField(upload_to='photos/%Y/%m/%d/')
     color = models.CharField(max_length=50)  # Add color field
     size = models.CharField(max_length=20)  # Add size field
+    seller = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='products')
 
     def __str__(self):
         return self.name
@@ -32,7 +36,7 @@ class CartItem(models.Model):
     date = models.DateField(auto_now=True)
     quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2, editable=False)  # Auto-calculated price
-    is_ordered = models.BooleanField(default=False)
+    is_ordered = models.BooleanField(default=False,editable=False) #will change it when ordered
 
     def save(self, *args, **kwargs):
         if self.quantity > self.item.quantity:
@@ -47,6 +51,8 @@ class CartItem(models.Model):
         return f'{self.quantity} x {self.item.name}'
 
 
+
+
 class Cart(models.Model):
     user = models.OneToOneField(Customer, on_delete=models.CASCADE)
     items = models.ManyToManyField(CartItem)
@@ -59,6 +65,9 @@ class Cart(models.Model):
 
     def __str__(self):
         return f"{self.user}-Cart"
+
+    def get_user_cart_items(self, user):
+        return self.items.filter(user=user)
 
 
 
@@ -79,6 +88,8 @@ class Order(models.Model):
         return f"Order #{self.pk} - {self.user.username}"
 
 
+
+
 class OrderItem(models.Model):
     ordered_items = models.ManyToManyField(Cart)
 
@@ -91,6 +102,3 @@ class OrderItem(models.Model):
     def get_user_carts(self, user):
         return self.ordered_items.filter(user=user)
 
-    for cart in Cart.objects.all():
-        if not Customer.objects.filter(id=cart.user_id).exists():
-            print(f"Invalid user reference in cart with id {cart.id}")

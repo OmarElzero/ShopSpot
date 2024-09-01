@@ -8,6 +8,7 @@ router.register('customer',views.viewset_customer)
 urlpatterns = [
 
 path('profile/', include(router.urls)),
+    path('login/', views.login),
 # path('profile/<int:id>/', views.customer_information),
 
 
