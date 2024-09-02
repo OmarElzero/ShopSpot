@@ -1,12 +1,22 @@
-from .models import CartItem, Cart
+from rest_framework.decorators import api_view
+
+from .models import CartItem, Cart,Category
 
 from . models import Product
-from .serializers import ProductSerializer,CartItemSerializer,CartSerializer
-from rest_framework import viewsets
+from .serializers import ProductSerializer,CartItemSerializer,CartSerializer,CategoriesSerializer
+from rest_framework import viewsets, status
 from django.core.exceptions import ValidationError
 from profiles.models import Customer
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+import django_filters
+from .models import Product
+from rest_framework import viewsets
+from django_filters.rest_framework import DjangoFilterBackend
+from .models import Product
+from .serializers import ProductSerializer
+from .filters import ProductFilter
 
 
 
@@ -19,6 +29,8 @@ from rest_framework.permissions import IsAuthenticated
 class viewset_product(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = ProductFilter
     authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
     def perform_create(self, serializer):
@@ -33,9 +45,17 @@ class viewset_product(viewsets.ModelViewSet):
         serializer.save(seller=customer)
 
 
+
+class viewset_category(viewsets.ModelViewSet):
+    queryset = Category.objects.all()
+    serializer_class = CategoriesSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 class viewset_cartItem(viewsets.ModelViewSet):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         cart_item = serializer.save()
@@ -61,7 +81,19 @@ class viewset_cartItem(viewsets.ModelViewSet):
 class viewset_cart(viewsets.ModelViewSet):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
 
+    def perform_create(self, serializer):
+        user = self.request.user
+        try:
+            # Fetch the Customer instance associated with the User
+            customer = Customer.objects.get(user=user)
+        except Customer.DoesNotExist:
+            # Handle the error if no Customer is found
+            raise ValidationError("Customer not found for the current user.")
+
+        serializer.save(user=customer)
     def perform_destroy(self, instance):
         for cart_item in instance.items.all():
             product = cart_item.item
@@ -70,6 +102,14 @@ class viewset_cart(viewsets.ModelViewSet):
             cart_item.delete()
 
         instance.delete()
+
+
+@api_view(['GET'])
+def FBV_List(request):
+    if request.method == 'GET':
+        guests = Product.objects.all()
+        serializer = ProductSerializer(guests, many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
 
 
 

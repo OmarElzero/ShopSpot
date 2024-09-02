@@ -4,21 +4,33 @@ from rest_framework.response import Response
 from rest_framework import status, viewsets
 from .models import Customer
 from .serializers import CustomerSerializer
-from django.contrib.auth import authenticate
-from django.db.models import Q
-from django.contrib.auth import authenticate, login as auth_login
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+
 
 
 class viewset_customer(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
 
+    def perform_create(self, serializer):
+        username = self.request.data.get('username')
+        if User.objects.filter(username=username).exists():
+            raise ValidationError("A user with that username already exists.")
+
+        user = User.objects.create_user(
+            username=username,
+            password=self.request.data.get('password')
+        )
+        serializer.save(user=user)
+
     #-------------------------BREAK FOR 5:40---------------------------------------------
+
 
 @api_view(['POST'])
 def login(request):
@@ -28,18 +40,12 @@ def login(request):
     if not username or not password:
         return Response({'error': 'Username and password are required'}, status=status.HTTP_400_BAD_REQUEST)
 
-    try:
-        customer = Customer.objects.get(username=username)
+    user = authenticate(username=username, password=password)
 
-        if customer.password == password:
-            # Store the customer ID in the session after a successful login
-            request.session['customer_id'] = customer.id
+    if user is not None:
+        # Get or create a token for the authenticated user
+        token, created = Token.objects.get_or_create(user=user)
 
-            # Get or create a token for the customer
-            token, created = Token.objects.get_or_create(user=customer)
-
-            return Response({'success': True, 'token': token.key}, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-    except Customer.DoesNotExist:
+        return Response({'success': True, 'token': token.key}, status=status.HTTP_200_OK)
+    else:
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)

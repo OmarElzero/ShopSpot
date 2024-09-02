@@ -66,8 +66,8 @@ class Cart(models.Model):
     def __str__(self):
         return f"{self.user}-Cart"
 
-    def get_user_cart_items(self, user):
-        return self.items.filter(user=user)
+    def get_items(self):
+        return self.items.all()
 
 
 
