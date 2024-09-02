@@ -48,13 +48,13 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 ]
 REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',  # For token-based authentication
-        'rest_framework.authentication.SessionAuthentication',  # For session-based authentication
-    ],
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',  # Ensure that the user is authenticated
-    ],
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework.authentication.TokenAuthentication',  # For token-based authentication
+    #     'rest_framework.authentication.SessionAuthentication',  # For session-based authentication
+    # ],
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.IsAuthenticated',  # Ensure that the user is authenticated
+    # ],
 }
 
 MIDDLEWARE = [

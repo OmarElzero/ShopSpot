@@ -1,24 +1,12 @@
-from django.shortcuts import render
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User, auth
-from .models import Product, CartItem, Cart, Category, Order, OrderItem
-from profiles.forms import ProductSearchForm, RegistrationForm
+from .models import CartItem, Cart
 
-from django.contrib.auth import login
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse
-from django.core.mail import send_mail
-from django.contrib import messages
-from django.shortcuts import reverse
 from . models import Product
 from .serializers import ProductSerializer,CartItemSerializer,CartSerializer
 from rest_framework import viewsets
 from django.core.exceptions import ValidationError
 from profiles.models import Customer
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-from django.contrib.auth.hashers import check_password
-
 
 
 
@@ -31,7 +19,8 @@ from django.contrib.auth.hashers import check_password
 class viewset_product(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    # permission_classes = [IsAuthenticated]
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
     def perform_create(self, serializer):
         customer_id = self.request.session.get('customer_id')
         if not customer_id:
