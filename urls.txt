@@ -1,0 +1,37 @@
+for login
+http://127.0.0.1:8000/profiles/login/
+for logout
+http://127.0.0.1:8000/profiles/logout/
+
+for customer (registration/edit/view profile/delete profile)
+http://127.0.0.1:8000/profiles/profile/customer/
+
+
+
+for only getting products (no need for tokens)
+http://127.0.0.1:8000/categories/get_products/
+
+for  CRUD products
+http://127.0.0.1:8000/categories/Categories/Products/
+
+for  CRUD cart_items
+http://127.0.0.1:8000/categories/Categories/cart_items/
+
+for  CRUD cart
+http://127.0.0.1:8000/categories/Categories/cart/
+
+
+for  CRUD category
+http://127.0.0.1:8000/categories/Categories/category/
+
+
+for  CRUD order_item
+http://127.0.0.1:8000/categories/Categories/order_item/
+
+
+
+for  CRUD order (just get it, it maded automatically)
+http://127.0.0.1:8000/categories/Categories/order/
+
+
+
