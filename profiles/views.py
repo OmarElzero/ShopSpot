@@ -5,7 +5,6 @@ from rest_framework import status, viewsets
 from .models import Customer
 from .serializers import CustomerSerializer
 from rest_framework.authtoken.models import Token
-from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
@@ -29,7 +28,6 @@ class viewset_customer(viewsets.ModelViewSet):
         )
         serializer.save(user=user)
 
-    #-------------------------BREAK FOR 5:40---------------------------------------------
 
 
 @api_view(['POST'])
