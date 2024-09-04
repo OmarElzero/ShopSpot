@@ -21,7 +21,6 @@ router = routers.DefaultRouter()
 urlpatterns = router.urls
 urlpatterns+= [
     path('admin/', admin.site.urls),
-    path('', include('pages.urls')),
     path('profiles/', include('profiles.urls')),
     path('categories/', include('categories.urls')),
 ]

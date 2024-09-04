@@ -35,7 +35,6 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'categories.apps.CategoriesConfig',
     'profiles.apps.ProfilesConfig',
-    'pages.apps.PagesConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -48,13 +47,10 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 ]
 REST_FRAMEWORK = {
-    # 'DEFAULT_AUTHENTICATION_CLASSES': [
-    #     'rest_framework.authentication.TokenAuthentication',  # For token-based authentication
-    #     'rest_framework.authentication.SessionAuthentication',  # For session-based authentication
-    # ],
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.IsAuthenticated',  # Ensure that the user is authenticated
-    # ],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+        # other authentication classes...
+    ],
 }
 
 MIDDLEWARE = [

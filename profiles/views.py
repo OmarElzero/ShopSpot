@@ -49,3 +49,17 @@ def login(request):
         return Response({'success': True, 'token': token.key}, status=status.HTTP_200_OK)
     else:
         return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+
+@api_view(['POST'])
+def logout(request):
+    try:
+        token = request.auth
+
+        if token:
+            token.delete()
+            return Response({'success': True, 'message': 'Logged out successfully'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Token not found'}, status=status.HTTP_400_BAD_REQUEST)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

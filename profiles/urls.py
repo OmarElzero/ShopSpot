@@ -10,6 +10,7 @@ urlpatterns = [
 
 path('profile/', include(router.urls)),
     path('login/', views.login),
+path('logout/', views.logout)
 
 # path('api-token-auth', obtain_auth_token),
 #     path('api-auth', include('rest_framework.urls')),

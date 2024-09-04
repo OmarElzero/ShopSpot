@@ -1,6 +1,6 @@
 from rest_framework.decorators import api_view
 
-from .models import CartItem, Cart,Category
+from .models import CartItem, Cart,Category,OrderItem,Order
 
 from . models import Product
 from .serializers import ProductSerializer,CartItemSerializer,CartSerializer,CategoriesSerializer
@@ -15,7 +15,7 @@ from .models import Product
 from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Product
-from .serializers import ProductSerializer
+from .serializers import ProductSerializer,OrderitemSerializer,OrderSerializer
 from .filters import ProductFilter
 
 
@@ -102,6 +102,26 @@ class viewset_cart(viewsets.ModelViewSet):
             cart_item.delete()
 
         instance.delete()
+
+
+class viewset_orderItem(viewsets.ModelViewSet):
+    queryset = OrderItem.objects.all()
+    serializer_class = OrderitemSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        user = self.request.user
+        customer = Customer.objects.get(user=user)
+        Order.objects.create(user=customer)
+
+
+class viewset_order(viewsets.ModelViewSet):
+    queryset = Order.objects.all()
+    serializer_class = OrderSerializer
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [IsAuthenticated]
+
 
 
 @api_view(['GET'])

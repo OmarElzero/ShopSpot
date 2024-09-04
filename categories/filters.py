@@ -12,3 +12,4 @@ class ProductFilter(django_filters.FilterSet):
     class Meta:
         model = Product
         fields = ['name', 'category', 'min_price', 'max_price', 'color', 'size']
+
