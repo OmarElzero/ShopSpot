@@ -46,6 +46,7 @@ class viewset_product(viewsets.ModelViewSet):
 
 
 
+
 class viewset_category(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategoriesSerializer
