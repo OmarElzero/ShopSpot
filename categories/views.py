@@ -38,7 +38,7 @@ class viewset_product(viewsets.ModelViewSet):
         if not customer_id:
             raise ValidationError("You must be logged in to create a product.")
         try:
-            customer = Customer.objects.get(pk=customer_id)
+            customer = Customer.objects.filter(pk=customer_id).first()
         except Customer.DoesNotExist:
             raise ValidationError("Invalid customer. Please log in again.")
 
