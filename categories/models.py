@@ -22,7 +22,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     quantity = models.PositiveIntegerField(default=0)
     category = models.ForeignKey('Category', on_delete=models.CASCADE)
-    image = models.ImageField(upload_to='photos/%Y/%m/%d/')
+    image = models.URLField(null=True, blank=True)
     color = models.CharField(max_length=50)  # Add color field
     size = models.CharField(max_length=20)  # Add size field
     seller = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='products')
