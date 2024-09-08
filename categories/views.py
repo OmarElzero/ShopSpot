@@ -31,8 +31,7 @@ class viewset_product(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_class = ProductFilter
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+
     def perform_create(self, serializer):
         customer_id = self.request.session.get('customer_id')
         if not customer_id:
@@ -50,13 +49,9 @@ class viewset_product(viewsets.ModelViewSet):
 class viewset_category(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategoriesSerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
 class viewset_cartItem(viewsets.ModelViewSet):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         cart_item = serializer.save()
@@ -82,8 +77,6 @@ class viewset_cartItem(viewsets.ModelViewSet):
 class viewset_cart(viewsets.ModelViewSet):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         user = self.request.user
@@ -108,8 +101,7 @@ class viewset_cart(viewsets.ModelViewSet):
 class viewset_orderItem(viewsets.ModelViewSet):
     queryset = OrderItem.objects.all()
     serializer_class = OrderitemSerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
+
 
 
     def perform_create(self, serializer):
@@ -121,8 +113,6 @@ class viewset_orderItem(viewsets.ModelViewSet):
 class viewset_order(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-    authentication_classes = [TokenAuthentication]
-    permission_classes = [IsAuthenticated]
 
 
 

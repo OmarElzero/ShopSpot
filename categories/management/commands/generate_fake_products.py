@@ -63,7 +63,7 @@ class Command(BaseCommand):
         for category in categories:
             if category.name in product_names:
                 self.stdout.write(self.style.SUCCESS(f"Generating products for category: {category.name}"))
-                for _ in range(100):  # Adjust the number of products per category
+                for _ in range(10):  # Adjust the number of products per category
                     product_name = random.choice(product_names[category.name])
                     product = Product.objects.create(
                         name=product_name,

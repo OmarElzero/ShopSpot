@@ -9,14 +9,21 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
-from django.core.exceptions import ValidationError
-
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from rest_framework.permissions import IsAuthenticated,AllowAny
 
 
 class viewset_customer(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
 
+
+
+
+    def get_permissions(self):
+        if self.action == 'create':
+            return [AllowAny()]
+        return [IsAuthenticated()]
     def perform_create(self, serializer):
         username = self.request.data.get('username')
         if User.objects.filter(username=username).exists():
@@ -30,15 +37,22 @@ class viewset_customer(viewsets.ModelViewSet):
 
 
 
+
 @api_view(['POST'])
 def login(request):
-    username = request.data.get('username')
+    username_or_email = request.data.get('username')
     password = request.data.get('password')
 
-    if not username or not password:
+    if not username_or_email or not password:
         return Response({'error': 'Username and password are required'}, status=status.HTTP_400_BAD_REQUEST)
+    if '@' in username_or_email:
+        try:
+            user = Customer.objects.get(email=username_or_email)
+            username_or_email = user.username
+        except ObjectDoesNotExist:
+            return Response({'error': 'User does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
-    user = authenticate(username=username, password=password)
+    user = authenticate(username=username_or_email, password=password)
 
     if user is not None:
         # Get or create a token for the authenticated user
