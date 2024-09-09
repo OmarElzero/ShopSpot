@@ -1,4 +1,4 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view,permission_classes
 
 from .models import CartItem, Cart,Category,OrderItem,Order
 
@@ -8,7 +8,7 @@ from rest_framework import viewsets, status
 from django.core.exceptions import ValidationError
 from profiles.models import Customer
 from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.response import Response
 import django_filters
 from .models import Product
@@ -17,6 +17,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Product
 from .serializers import ProductSerializer,OrderitemSerializer,OrderSerializer
 from .filters import ProductFilter
+from rest_framework.generics import ListAPIView
 
 
 
@@ -116,12 +117,10 @@ class viewset_order(viewsets.ModelViewSet):
 
 
 
-@api_view(['GET'])
-def FBV_List(request):
-    if request.method == 'GET':
-        guests = Product.objects.all()
-        serializer = ProductSerializer(guests, many=True)
-        return Response(serializer.data,status=status.HTTP_200_OK)
+class CBV(ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [AllowAny]
 
 
 

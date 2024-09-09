@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.apps import AppConfig
 from django.core.exceptions import ValidationError
 from profiles.models import Customer
-
 import profiles.models
 # Create your models here.
 

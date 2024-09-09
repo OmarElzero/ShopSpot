@@ -13,7 +13,7 @@ router.register('order_item', views.viewset_orderItem)
 router.register('order', views.viewset_order)
 urlpatterns = [
     path('Categories/', include(router.urls)),
-    path('get_products/',views.FBV_List)
+    path('get_products/',views.CBV.as_view())
 
 
 ]

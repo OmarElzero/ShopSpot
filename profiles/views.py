@@ -11,15 +11,12 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from rest_framework.permissions import IsAuthenticated,AllowAny
+from rest_framework.decorators import permission_classes
 
 
 class viewset_customer(viewsets.ModelViewSet):
     queryset = Customer.objects.all()
     serializer_class = CustomerSerializer
-
-
-
-
     def get_permissions(self):
         if self.action == 'create':
             return [AllowAny()]
@@ -39,6 +36,7 @@ class viewset_customer(viewsets.ModelViewSet):
 
 
 @api_view(['POST'])
+@permission_classes([AllowAny])
 def login(request):
     username_or_email = request.data.get('username')
     password = request.data.get('password')
