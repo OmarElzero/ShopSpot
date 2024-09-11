@@ -3,7 +3,10 @@ from django.contrib.auth.models import User
 from django.apps import AppConfig
 from django.core.exceptions import ValidationError
 from profiles.models import Customer
+from rest_framework.response import Response
 import profiles.models
+from rest_framework import viewsets, status
+
 # Create your models here.
 
 
@@ -39,7 +42,9 @@ class CartItem(models.Model):
 
     def save(self, *args, **kwargs):
         if self.quantity > self.item.quantity:
-            raise ValidationError(f"Cannot add {self.quantity} units of {self.item.name}. Only {self.item.quantity} available.")
+
+            return Response({'error' :f"Cannot add {self.quantity} units of {self.item.name}. Only {self.item.quantity} available."}, status.HTTP_400_BAD_REQUEST )
+
         self.price = self.item.price * self.quantity
         super().save(*args, **kwargs)
 

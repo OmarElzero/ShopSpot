@@ -12,6 +12,8 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.decorators import permission_classes
+from django.core.exceptions import PermissionDenied
+
 
 
 class viewset_customer(viewsets.ModelViewSet):
@@ -24,13 +26,26 @@ class viewset_customer(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         username = self.request.data.get('username')
         if User.objects.filter(username=username).exists():
-            raise ValidationError("A user with that username already exists.")
+            return Response({'error' : 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.create_user(
             username=username,
             password=self.request.data.get('password')
         )
         serializer.save(user=user)
+
+    def perform_destroy(self, instance):
+        customer = self.request.user.customer
+        if customer.id == instance.id:
+            user = customer.user
+            Token.objects.filter(user=user).delete()
+            customer.delete()
+            user.delete()
+        else:
+            raise PermissionDenied('You are not allowed to delete this customer.')
+
+
+
 
 
 

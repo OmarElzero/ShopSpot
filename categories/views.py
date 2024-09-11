@@ -33,6 +33,11 @@ class viewset_product(viewsets.ModelViewSet):
     filter_backends = (DjangoFilterBackend,)
     filterset_class = ProductFilter
 
+    def get_permissions(self):
+        if self.action in ['retrieve', 'list']:
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
     def perform_create(self, serializer):
         customer_id = self.request.session.get('customer_id')
         if not customer_id:
@@ -50,6 +55,10 @@ class viewset_product(viewsets.ModelViewSet):
 class viewset_category(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategoriesSerializer
+    def get_permissions(self):
+        if self.action == 'list':
+            return [AllowAny()]
+        return [IsAuthenticated()]
 class viewset_cartItem(viewsets.ModelViewSet):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
@@ -59,14 +68,24 @@ class viewset_cartItem(viewsets.ModelViewSet):
         product = cart_item.item
         customer = self.request.user.customer # here
         if product.seller == customer:
-            raise ValidationError(f"You cannot add your own product '{product.name}' to the cart.")
-
+            # raise ValidationError(f"You cannot add your own product '{product.name}' to the cart")
+              return Response({'error' : f"You cannot add your own product '{product.name}' to the cart"},status.HTTP_403_FORBIDDEN)
         # Decrease the quantity of the product by the quantity in the cart item
         if product.quantity >= cart_item.quantity:
             product.quantity -= cart_item.quantity
             product.save()
         else:
-            raise ValidationError(f"Not enough stock for {product.name}. Only {product.quantity} available.")
+            # raise ValidationError(f"Not enough stock for {product.name}. Only {product.quantity} available.")
+            return Response({'error' : f"Not enough stock for {product.name}. Only {product.quantity} available." },status=status.HTTP_400_BAD_REQUEST)
+        cart, created = Cart.objects.get_or_create(user=customer)
+        if cart.items.filter(item=cart_item.item).exists():
+            # If the item already exists in the cart, update the quantity
+            existing_cart_item = cart.items.get(item=cart_item.item)
+            existing_cart_item.quantity += cart_item.quantity
+            existing_cart_item.save()
+        else:
+            # Otherwise, add the new item to the cart
+            cart.items.add(cart_item)
 
     def perform_destroy(self, instance):
         product = instance.item
@@ -117,10 +136,6 @@ class viewset_order(viewsets.ModelViewSet):
 
 
 
-class CBV(ListAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductSerializer
-    permission_classes = [AllowAny]
 
 
 

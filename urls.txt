@@ -7,10 +7,6 @@ for customer (registration/edit/view profile/delete profile)
 http://127.0.0.1:8000/profiles/profile/customer/
 
 
-
-for only getting products (no need for tokens)
-http://127.0.0.1:8000/categories/get_products/
-
 for  CRUD products
 http://127.0.0.1:8000/categories/Categories/Products/
 
