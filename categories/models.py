@@ -1,11 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
-from django.apps import AppConfig
 from django.core.exceptions import ValidationError
 from profiles.models import Customer
-from rest_framework.response import Response
-import profiles.models
-from rest_framework import viewsets, status
 
 # Create your models here.
 
@@ -15,9 +10,12 @@ class Category(models.Model):
 
     def __str__(self):
         return self.name
-
 def get_default_seller():
-        return Customer.objects.first().id
+    first_customer = Customer.objects.first()
+    if first_customer is not None:
+        return first_customer.id
+    raise ValidationError("No customers available to set as default seller.")
+
 class Product(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField()
@@ -27,7 +25,7 @@ class Product(models.Model):
     image = models.URLField(null=True, blank=True)
     color = models.CharField(max_length=50)  # Add color field
     size = models.CharField(max_length=20)  # Add size field
-    seller = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='products')
+    seller = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='products', default=get_default_seller)
 
     def __str__(self):
         return self.name
@@ -37,14 +35,13 @@ class CartItem(models.Model):
     item = models.ForeignKey('Product', on_delete=models.CASCADE)
     date = models.DateField(auto_now=True)
     quantity = models.PositiveIntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2, editable=False)  # Auto-calculated price
-    is_ordered = models.BooleanField(default=False,editable=False) #will change it when ordered
-
+    # Auto-calculated price
+    price = models.DecimalField(max_digits=10, decimal_places=2, editable=False)
+    # will change it when ordered
+    is_ordered = models.BooleanField(default=False, editable=False)
     def save(self, *args, **kwargs):
         if self.quantity > self.item.quantity:
-
-            return Response({'error' :f"Cannot add {self.quantity} units of {self.item.name}. Only {self.item.quantity} available."}, status.HTTP_400_BAD_REQUEST )
-
+            raise ValidationError(f"Cannot add {self.quantity} units of {self.item.name}. Only {self.item.quantity} available.")
         self.price = self.item.price * self.quantity
         super().save(*args, **kwargs)
 
@@ -60,12 +57,10 @@ class CartItem(models.Model):
 class Cart(models.Model):
     user = models.OneToOneField(Customer, on_delete=models.CASCADE)
     items = models.ManyToManyField(CartItem)
-
     def total(self):
-        total_price = 0
-        for cart_item in self.items.all():
-            total_price += cart_item.total()
-        return total_price
+        from django.db.models import Sum, F
+        total_price = self.items.aggregate(total=Sum(F('price') * F('quantity')))['total']
+        return total_price or 0
 
     def __str__(self):
         return f"{self.user}-Cart"
@@ -104,5 +99,4 @@ class OrderItem(models.Model):
         return f"Order Items: {cart_items_summary}"
 
     def get_user_carts(self, user):
-        return self.ordered_items.filter(user=user)
-
+        return self.ordered_items.filter(user=user).prefetch_related('items__item')
