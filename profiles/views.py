@@ -26,13 +26,11 @@ class viewset_customer(viewsets.ModelViewSet):
                 return [IsAuthenticated()]
             else:
                 raise PermissionDenied()
-        elif self.action == 'retrieve': 
+        elif self.action in ['retrieve', 'update', 'partial_update']:
             if self.request.user.is_staff or self.request.user.is_superuser or int(self.request.user.customer.id) == int(self.kwargs['pk']):
                 return [IsAuthenticated()]
             else:
                 raise PermissionDenied()
-
-                # raise PermissionDenied()
         return [IsAuthenticated()]
     
     def perform_create(self, serializer):

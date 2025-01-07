@@ -14,6 +14,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from .models import Product
 from .serializers import ProductSerializer,OrderItemSerializer,OrderSerializer
 from .filters import ProductFilter
+from django.core.exceptions import PermissionDenied
+
 
 
 
@@ -32,6 +34,11 @@ class viewset_product(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ['retrieve', 'list']:
             return [AllowAny()]
+        elif self.action in ['update', 'partial_update']:
+            if self.request.user.is_staff or self.request.user.is_superuser or int(self.request.user.customer.id) == int(self.kwargs['pk']):
+                return [IsAuthenticated()]
+            else:
+                raise PermissionDenied()
         return [IsAuthenticated()]
 
     def perform_create(self, serializer):
@@ -67,6 +74,18 @@ class viewset_cartItem(viewsets.ModelViewSet):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
 
+    def get_permissions(self):
+        if self.action in [ 'list']:
+            if self.request.user.is_staff or self.request.user.is_superuser:
+                return [IsAuthenticated()]
+            else:
+                raise PermissionDenied()
+                # return [AllowAny()]
+        elif self.action in ['create']:
+                return [AllowAny()]
+        else:
+            raise PermissionDenied()
+
     def perform_create(self, serializer):
         cart_item = serializer.save()
         product = cart_item.item
@@ -90,16 +109,51 @@ class viewset_cartItem(viewsets.ModelViewSet):
             cart.items.add(cart_item)
 
     def perform_destroy(self, instance):
-        product = instance.item
-        product.quantity += instance.quantity
-        product.save()
+        # Get the cart associated with the CartItem
+        cart = Cart.objects.filter(items=instance).first()
+        if not cart:
+            raise PermissionDenied("This cart item does not belong to any cart.")
 
-        instance.delete()
+        # Check if the cart belongs to the logged-in user
+        if cart.user != self.request.user.customer:
+            raise PermissionDenied("You are not allowed to delete this cart item.")
+        
+        if cart.user == self.request.user.customer:
+            product = instance.item
+            product.quantity += instance.quantity
+            product.save()
+            instance.delete()
+        
+        else:
+            return Response({'error': 'You cannot delete another user\'s cart item.'}, status=status.HTTP_403_FORBIDDEN)
+
+        
 
 #endpoint for cart
 class viewset_cart(viewsets.ModelViewSet):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
+
+    def get_permissions(self):
+        if self.action in ['destroy', 'list']:
+            if self.request.user.is_staff or self.request.user.is_superuser:
+                return [IsAuthenticated()]
+            else:
+                raise PermissionDenied()
+        elif self.action in [ 'update', 'partial_update', 'retrieve']:
+            cart_id = self.kwargs.get('pk')
+            cart = Cart.objects.get(pk=cart_id)
+            if self.request.user.is_staff or self.request.user.is_superuser or cart.user == self.request.user.customer:
+                return [IsAuthenticated()]
+            else:
+                raise PermissionDenied(
+                    # depoug statment 
+                    # {"error": f"You are not allowed to perform this action because user for cart is {cart.user} and you are {self.request.user.customer}."}
+                )
+        else:
+            raise PermissionDenied()
+        
+       
 
     def perform_create(self, serializer):
         user = self.request.user
