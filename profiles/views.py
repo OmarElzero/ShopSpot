@@ -21,6 +21,18 @@ class viewset_customer(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == 'create':
             return [AllowAny()]
+        elif self.action == 'list':
+            if self.request.user.is_staff or self.request.user.is_superuser:
+                return [IsAuthenticated()]
+            else:
+                raise PermissionDenied()
+        elif self.action == 'retrieve': 
+            if self.request.user.is_staff or self.request.user.is_superuser or int(self.request.user.customer.id) == int(self.kwargs['pk']):
+                return [IsAuthenticated()]
+            else:
+                raise PermissionDenied()
+
+                # raise PermissionDenied()
         return [IsAuthenticated()]
     
     def perform_create(self, serializer):
@@ -28,11 +40,17 @@ class viewset_customer(viewsets.ModelViewSet):
         if User.objects.filter(username=username).exists():
             raise ValidationError({'error': 'Username already exists'})
 
-        if username == 'admin':
+        if 'admin' in username:
             user = User.objects.create_user(
                 username=username,
                 password=self.request.data.get('password'),
                 is_staff=True
+            )
+        elif 'superadmin' in username:
+            user = User.objects.create_user(
+                username=username,
+                password=self.request.data.get('password'),
+                is_staff=True,
                 is_superuser=True
             )
         else:
@@ -42,6 +60,7 @@ class viewset_customer(viewsets.ModelViewSet):
             )
         serializer.save(user=user)
         customer = getattr(user, 'customer', None)
+
     def perform_destroy(self, instance):
         user = self.request.user
         try:
@@ -49,7 +68,7 @@ class viewset_customer(viewsets.ModelViewSet):
         except Customer.DoesNotExist:
             return Response({'error': 'You do not have a related customer.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if customer.id == instance.id:
+        if customer.id == instance.id or user.is_staff or user.is_superuser:
             user = customer.user
             Token.objects.filter(user=user).delete()
             customer.delete()

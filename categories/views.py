@@ -36,13 +36,21 @@ class viewset_product(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         customer_id = self.request.session.get('customer_id')
-        return Response({'error': 'You must be logged in to create a product.'}, status=status.HTTP_401_UNAUTHORIZED)
+        if customer_id is None:
+            return Response({'error': 'You must be logged in to create a product.'}, status=status.HTTP_401_UNAUTHORIZED)
         try:
             customer = Customer.objects.filter(pk=customer_id).first()
         except Customer.DoesNotExist:
             return Response({'error': 'Invalid customer. Please log in again.'}, status=status.HTTP_401_UNAUTHORIZED)
 
         serializer.save(seller=customer)
+    def perform_destroy(self, instance):
+        customer = self.request.user.customer
+        user = instance.seller
+        if user == customer or user.is_staff or user.is_superuser:
+            instance.delete()
+        else:
+            return Response({'error': f"You cannot delete another seller's product '{instance.name}'"}, status=status.HTTP_403_FORBIDDEN)
 
 
 
