@@ -1,23 +1,19 @@
-from rest_framework.decorators import api_view,permission_classes
 
 from .models import CartItem, Cart,Category,OrderItem,Order
 
 from . models import Product
-from .serializers import ProductSerializer,CartItemSerializer,CartSerializer,CategoriesSerializer
+from .serializers import ProductSerializer,CartItemSerializer,CartSerializer,CategorySerializer
 from rest_framework import viewsets, status
 from django.core.exceptions import ValidationError
 from profiles.models import Customer
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.response import Response
-import django_filters
 from .models import Product
 from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Product
-from .serializers import ProductSerializer,OrderitemSerializer,OrderSerializer
+from .serializers import ProductSerializer,OrderItemSerializer,OrderSerializer
 from .filters import ProductFilter
-from rest_framework.generics import ListAPIView
 
 
 
@@ -40,25 +36,25 @@ class viewset_product(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         customer_id = self.request.session.get('customer_id')
-        if not customer_id:
-            raise ValidationError("You must be logged in to create a product.")
+        return Response({'error': 'You must be logged in to create a product.'}, status=status.HTTP_401_UNAUTHORIZED)
         try:
             customer = Customer.objects.filter(pk=customer_id).first()
         except Customer.DoesNotExist:
-            raise ValidationError("Invalid customer. Please log in again.")
+            return Response({'error': 'Invalid customer. Please log in again.'}, status=status.HTTP_401_UNAUTHORIZED)
 
         serializer.save(seller=customer)
 
 
 
-
+#endpoint for category
 class viewset_category(viewsets.ModelViewSet):
     queryset = Category.objects.all()
-    serializer_class = CategoriesSerializer
+    serializer_class = CategorySerializer
     def get_permissions(self):
         if self.action == 'list':
             return [AllowAny()]
         return [IsAuthenticated()]
+#endpoint for cartitem    
 class viewset_cartItem(viewsets.ModelViewSet):
     queryset = CartItem.objects.all()
     serializer_class = CartItemSerializer
@@ -68,14 +64,12 @@ class viewset_cartItem(viewsets.ModelViewSet):
         product = cart_item.item
         customer = self.request.user.customer # here
         if product.seller == customer:
-            # raise ValidationError(f"You cannot add your own product '{product.name}' to the cart")
               return Response({'error' : f"You cannot add your own product '{product.name}' to the cart"},status.HTTP_403_FORBIDDEN)
         # Decrease the quantity of the product by the quantity in the cart item
         if product.quantity >= cart_item.quantity:
             product.quantity -= cart_item.quantity
             product.save()
         else:
-            # raise ValidationError(f"Not enough stock for {product.name}. Only {product.quantity} available.")
             return Response({'error' : f"Not enough stock for {product.name}. Only {product.quantity} available." },status=status.HTTP_400_BAD_REQUEST)
         cart, created = Cart.objects.get_or_create(user=customer)
         if cart.items.filter(item=cart_item.item).exists():
@@ -94,6 +88,7 @@ class viewset_cartItem(viewsets.ModelViewSet):
 
         instance.delete()
 
+#endpoint for cart
 class viewset_cart(viewsets.ModelViewSet):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
@@ -117,10 +112,10 @@ class viewset_cart(viewsets.ModelViewSet):
 
         instance.delete()
 
-
+#endpoint for orderItem
 class viewset_orderItem(viewsets.ModelViewSet):
     queryset = OrderItem.objects.all()
-    serializer_class = OrderitemSerializer
+    serializer_class = OrderItemSerializer
 
 
 
@@ -129,7 +124,7 @@ class viewset_orderItem(viewsets.ModelViewSet):
         customer = Customer.objects.get(user=user)
         Order.objects.create(user=customer)
 
-
+#endpoint for order
 class viewset_order(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer

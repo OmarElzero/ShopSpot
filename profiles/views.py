@@ -11,6 +11,7 @@ from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from rest_framework.decorators import permission_classes
 from django.core.exceptions import PermissionDenied
+from django.contrib.auth import authenticate
 
 
 
@@ -21,10 +22,11 @@ class viewset_customer(viewsets.ModelViewSet):
         if self.action == 'create':
             return [AllowAny()]
         return [IsAuthenticated()]
+    
     def perform_create(self, serializer):
         username = self.request.data.get('username')
         if User.objects.filter(username=username).exists():
-            raise ValidationError('Username already exists')
+            return Response({'error': 'Username already exists'}, status=status.HTTP_400_BAD_REQUEST)
 
         user = User.objects.create_user(
             username=username,
@@ -37,7 +39,7 @@ class viewset_customer(viewsets.ModelViewSet):
         try:
             customer = user.customer
         except Customer.DoesNotExist:
-            raise PermissionDenied('You do not have a related customer.')
+            return Response({'error': 'You do not have a related customer.'}, status=status.HTTP_400_BAD_REQUEST)
 
         if customer.id == instance.id:
             user = customer.user
@@ -45,7 +47,7 @@ class viewset_customer(viewsets.ModelViewSet):
             customer.delete()
             user.delete()
         else:
-            raise PermissionDenied('You are not allowed to delete this customer.')
+            return Response({'error': 'You are not allowed to delete this customer.'}, status=status.HTTP_403_FORBIDDEN)
 
 
 
