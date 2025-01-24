@@ -26,7 +26,7 @@ class viewset_customer(viewsets.ModelViewSet):
                 return [IsAuthenticated()]
             else:
                 raise PermissionDenied()
-        elif self.action in ['retrieve', 'update', 'partial_update']:
+        elif self.action in ['retrieve', 'update', 'partial_update', 'destroy']:
             if self.request.user.is_staff or self.request.user.is_superuser or int(self.request.user.customer.id) == int(self.kwargs['pk']):
                 return [IsAuthenticated()]
             else:
@@ -66,12 +66,19 @@ class viewset_customer(viewsets.ModelViewSet):
         except Customer.DoesNotExist:
             return Response({'error': 'You do not have a related customer.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if customer.id == instance.id or user.is_staff or user.is_superuser:
-            user = customer.user
+    # Allow deletion if the user is staff or superuser
+        if user.is_staff or user.is_superuser:
+            user = instance.user
+            Token.objects.filter(user=user).delete()
+            instance.delete()
+            user.delete()
+    # Allow deletion if the user is deleting their own account
+        elif customer.id == instance.id:
             Token.objects.filter(user=user).delete()
             customer.delete()
             user.delete()
         else:
+        # Deny deletion if the user is trying to delete another customer's account
             return Response({'error': 'You are not allowed to delete this customer.'}, status=status.HTTP_403_FORBIDDEN)
 
 

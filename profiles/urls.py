@@ -9,8 +9,8 @@ router.register('customer',views.viewset_customer)
 urlpatterns = [
 
 path('profile/', include(router.urls)),
-    path('login/', views.login),
-path('logout/', views.logout)
+    path('login/', views.login,name='login'),
+path('logout/', views.logout, name='logout'),
 
 # path('api-token-auth', obtain_auth_token),
 #     path('api-auth', include('rest_framework.urls')),

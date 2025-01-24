@@ -11,10 +11,10 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 def get_default_seller():
-    first_customer = Customer.objects.first()
-    if first_customer is not None:
-        return first_customer.id
-    raise ValidationError("No customers available to set as default seller.")
+    from django.contrib.auth.models import User
+    default_user, _ = User.objects.get_or_create(username="default_user", defaults={"email": "default@example.com"})
+    default_customer, _ = Customer.objects.get_or_create(user=default_user, defaults={"name": "Default Customer"})
+    return default_customer.id
 
 class Product(models.Model):
     name = models.CharField(max_length=200)
@@ -63,7 +63,7 @@ class Cart(models.Model):
         return total_price or 0
 
     def __str__(self):
-        return f"{self.user}-Cart"
+       return f'{self.user.user.username}-Cart' 
 
     def get_items(self):
         return self.items.all()
@@ -84,13 +84,14 @@ class Order(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
 
     def __str__(self):
-        return f"Order #{self.pk} - {self.user.username}"
+        return f"Order #{self.pk} - {self.user.user.username}"
 
 
 
 
 class OrderItem(models.Model):
     ordered_items = models.ManyToManyField(Cart)
+    
 
     def __str__(self):
         cart_items_summary = ", ".join(

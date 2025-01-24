@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.apps import AppConfig
 from django.db import models
 from django.utils.crypto import get_random_string
+from django.core.exceptions import ValidationError
 
 import categories.models
 # Create your models here.
@@ -17,6 +18,12 @@ class Customer(models.Model):
     address = models.TextField()
     username = models.CharField(max_length=50, unique=True)
     password = models.CharField(max_length=50)
+
+
+    def clean(self):
+        if self.phone and len(str(self.phone)) < 10:  # Assuming phone should be at least 10 digits
+            raise ValidationError("Phone number must be at least 10 digits long.")
+        super().clean()
 
 
     def __str__(self):

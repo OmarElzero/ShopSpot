@@ -180,7 +180,20 @@ class viewset_orderItem(viewsets.ModelViewSet):
     serializer_class = OrderItemSerializer
 
 
-
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            if self.request.user.is_staff or self.request.user.is_superuser:
+                return [IsAuthenticated()]
+            else:
+                raise PermissionDenied()
+        elif self.action in ['retrieve','destroy']:
+            if self.request.user.is_staff or self.request.user.is_superuser or int(self.request.user.customer.id) == int(self.kwargs['pk']):
+                return [IsAuthenticated()]
+            else:
+                raise PermissionDenied()
+        else:
+            return [IsAuthenticated()]
+            
     def perform_create(self, serializer):
         user = self.request.user
         customer = Customer.objects.get(user=user)
@@ -190,8 +203,6 @@ class viewset_orderItem(viewsets.ModelViewSet):
 class viewset_order(viewsets.ModelViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
-
-
 
 
 
