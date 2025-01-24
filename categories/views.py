@@ -68,6 +68,11 @@ class viewset_category(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action == 'list':
             return [AllowAny()]
+        elif self.action == 'create':
+            if self.request.user.is_staff or self.request.user.is_superuser:
+                return [AllowAny()]
+            else:
+                raise PermissionDenied()
         return [IsAuthenticated()]
 #endpoint for cartitem    
 class viewset_cartItem(viewsets.ModelViewSet):
