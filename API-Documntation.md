@@ -26,8 +26,11 @@
 ```
 
 ### Logout
+
 **URL:** `http://127.0.0.1:8000/profiles/logout/`
+
 **Method:** `POST`
+
 **Description:** Logs the user out and invalidates the session token.
 
 ---
